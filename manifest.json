@@ -1,0 +1,25 @@
+
+{
+  "manifest_version": 3,
+  "name": "Boomerang",
+  "short_name": "Boomerang",
+  "author": "Mitchell Mark-George",
+  "version": "1.0",
+  "description": "An easier way to switch between tabs",
+  "permissions": ["tabs"],
+  "offline_enabled": true,
+  "minimum_chrome_version": "88",
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "commands": {
+    "boomerang-left": {
+      "suggested_key": "Ctrl+Left",
+      "description": "Go backwards in the tab history stack"
+    },
+    "boomerang-right": {
+      "suggested_key": "Ctrl+Right",
+      "description": "Go forwards in the tab history stack"
+    }
+  }
+}
