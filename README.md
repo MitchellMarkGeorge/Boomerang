@@ -1,0 +1,82 @@
+# Boomerang
+
+![Boomerang Logo](src/icons/Boomerang.png)
+
+A better way to switch between tabs.
+
+
+## Instructions
+
+<details>
+<summary>Development Quick Start</summary>
+
+### Prerequisites
+
+- Node.js (tested on v18)
+- NPM (tested on v8.6.0)
+- Chrome (>= v88), has only been tested here
+
+Note: Even thought the extension uses the `webextension-pollyfill` library, it has currently only been tested on Chrome. However, it should work on other browsers like Firefox, Opera, Edge, etc.
+
+### Clone Repo
+
+```bash
+git clone https://github.com/MitchellMarkGeorge/Boomerang
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Start Dev Build
+
+```bash
+npm start
+```
+
+Note: For minified production build, use `npm run build` instead.
+
+### Add To Chrome
+
+- Open `chrome://extensions`
+- Enable Development mode
+- Click Load Unpacked button
+- Navigate to repository
+- Select `dist` directory
+
+</details>
+<details>
+<summary>
+Usage
+</summary>
+
+- To add items to the TabStack, click on the Boomerang browser action
+- As of right now, it only supports 3 tabs at a time as a default, soon this will be customizable.
+- Use `ctrl` + `Right` to go forward in the TabStack
+- Use `ctrl` + `Left` to go backward in the TabStack
+Note: For Mac, `cmd` is used instead of `ctrl`.
+
+</details>
+
+## Built With
+- TypeScript (for the background script)
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+
+## Authors
+
+- **Mitchell Mark-George** - _Initial work_
+
+See also the list of [contributors](https://github.com/MitchellMarkGeorge/TabButler/contributors) who participated in this project.
+
+<!-- ## Contributing
+
+Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us. -->
+
+<!-- ## License
+
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details -->

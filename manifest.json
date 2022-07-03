@@ -6,9 +6,15 @@
   "author": "Mitchell Mark-George",
   "version": "1.0",
   "description": "An easier way to switch between tabs",
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "storage"],
   "offline_enabled": true,
   "minimum_chrome_version": "88",
+  "action": {
+    "48": "icons/Boomerang.png"
+  },
+  "icons": {
+    "48": "icons/Boomerang.png"
+  },
   "background": {
     "service_worker": "background/background.js"
   },
