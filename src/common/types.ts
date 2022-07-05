@@ -10,6 +10,8 @@ export interface TabStackItem {
 
 export interface StoredData {
     currentIndex: number,
+    previousIndex: number // previous position of the current tab
     maxStackSize: number
     tabStack: TabStackItem[]
+    isBoomeranging: boolean
 }

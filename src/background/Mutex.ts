@@ -1,46 +1,46 @@
 // https://spin.atomicobject.com/2018/09/10/javascript-concurrency/
-// export class Mutex {
-//   private mutex = Promise.resolve();
-
-//   lock(): PromiseLike<() => void> {
-//     let begin: (unlock: () => void) => void = (unlock) => {};
-
-//     this.mutex = this.mutex.then(() => {
-//       return new Promise(begin);
-//     });
-
-//     return new Promise((res) => {
-//       begin = res;
-//     });
-//   }
-
-//   async dispatch<T>(fn: (() => T) | (() => PromiseLike<T>)): Promise<T> {
-//     const unlock = await this.lock();
-//     try {
-//       return await Promise.resolve(fn());
-//     } finally {
-//       unlock();
-//     }
-//   }
-// }
-
-// https://stackoverflow.com/questions/63832831/testing-a-javascript-mutex-implementation
 export class Mutex {
-  private current = Promise.resolve();
+  private mutex = Promise.resolve();
 
-  async lock() {
-    let unlock: () => void;
-    const next = new Promise<void>((resolve) => {
-        // set the unlock function to be a function that resolves 
-      unlock = () => {
-        resolve();
-      };
+  lock(): PromiseLike<() => void> {
+    let begin: (unlock: () => void) => void = (unlock) => {};
+
+    this.mutex = this.mutex.then(() => {
+      return new Promise(begin);
     });
-    const waiter = this.current.then(() => unlock); // create a promise that returns the unlock function when the current mutex iself is resolved
-    this.current = next; //
-    return await waiter; // wait for the current to be resolved (meaning its unlock function is called)
+
+    return new Promise((res) => {
+      begin = res;
+    });
+  }
+
+  async dispatch<T>(fn: (() => T) | (() => PromiseLike<T>)): Promise<T> {
+    const unlock = await this.lock();
+    try {
+      return await Promise.resolve(fn());
+    } finally {
+      unlock();
+    }
   }
 }
+
+// https://stackoverflow.com/questions/63832831/testing-a-javascript-mutex-implementation
+// export class Mutex {
+//   private current = Promise.resolve();
+
+//   async lock() {
+//     let unlock: () => void;
+//     const next = new Promise<void>((resolve) => {
+//         // set the unlock function to be a function that resolves 
+//       unlock = () => {
+//         resolve();
+//       };
+//     });
+//     const waiter = this.current.then(() => unlock); // create a promise that returns the unlock function when the current mutex iself is resolved
+//     this.current = next; //
+//     return await waiter; // wait for the current to be resolved (meaning its unlock function is called)
+//   }
+// }
 
 // think of this type... should I use a generic instead?
 type PromiseFunction = () => Promise<any>;
