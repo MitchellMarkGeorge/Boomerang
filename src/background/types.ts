@@ -15,3 +15,5 @@ export interface StoredData {
     tabStack: TabStackItem[]
     isBoomeranging: boolean
 }
+
+export type StoredDataKeys = (keyof StoredData)[]

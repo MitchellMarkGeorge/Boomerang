@@ -1,8 +1,7 @@
-import { addToTabStack, removeFromTabStack } from "./utils";
 import browser from "webextension-polyfill";
 // import { Mutex, MutexQueue } from "./Mutex";
 import { Mutex } from "async-mutex";
-import { Commands, StoredData, TabStackItem } from "../common/types";
+import { Commands, StoredData, TabStackItem } from "./types";
 import { TabStack } from "./TabStack";
 
 // might be able to just use the activeTab permission
@@ -44,15 +43,16 @@ browser.commands.onCommand.addListener((command) => {
       //   command === Commands.BOOMERANG_LEFT ||
       //   command === Commands.BOOMERANG_RIGHT
       // ) {
-      if (tabStack.getLength() > 1) {
+      if (tabStack.getStackLength() > 1) {
         await mutex.runExclusive(async () => {
           if (!tabStack.getIsBoomeranging()) {
-            await tabStack.updateIsBoomeranging(true);
+            await tabStack.enterBoomerangMode();
+            console.log("ENTERING BOOMERANGMODE")
           }
           const currentIndex = tabStack.getCurrentIndex();
           // const previousIndex = tabStack.getPreviousIndex();
           // think of prevous index as the previous position of the tab before it became the mru tab
-          const tabStackLength = tabStack.getLength();
+          const tabStackLength = tabStack.getStackLength();
           console.log("currentIndex: ", currentIndex);
           // console.log("previousIndex: ", previousIndex);
 
@@ -60,6 +60,7 @@ browser.commands.onCommand.addListener((command) => {
           // https://stackoverflow.com/questions/19999877/loop-seamlessly-over-an-array-forwards-or-backwards-given-an-offset-larger-than
           let newIndex: number;
           if (command === Commands.BOOMERANG_RIGHT) {
+            // should it be circular
             // decreases as we are moving up/forwards in the stack (moving towards the more recent items in the stack)
             newIndex =
               (((currentIndex - 1) % tabStackLength) + tabStackLength) %
@@ -75,7 +76,7 @@ browser.commands.onCommand.addListener((command) => {
           await boomerangToTab(tabStack.getItemAtIndex(newIndex));
           // mutex.runExclusive(async () => {
           //   await tabStack.updatePreviousIndex(currentIndex);
-          await tabStack.updateCurrentIndex(newIndex);
+        //   await tabStack.updateCurrentIndex(newIndex); // move this to the onActivated listener, right?
           // });
         });
         //   }
@@ -114,46 +115,60 @@ browser.tabs.onActivated.addListener(({ tabId, windowId }) => {
       // - we switch to a tab using an actual click
       // on exit, the current index is reset to 0 and isBoomeranging is set to 0
       // the tabstack should be unfrozen and should be allowed to change
+      const item = { windowId, tabId }
       if (!tabStack.getIsBoomeranging()) {
         // doing this makes sure the tabstack remain "frozen" in the boomeranging state
-        await tabStack.addToTabStack({ windowId, tabId });
-      }
-    });
-  });
-});
+        await tabStack.addToTabStack(item);
+      } else {
+        // check if it is already in the stack
+        // if it is, update the index
+        const index = tabStack.findIndex(item);
 
-browser.windows.onFocusChanged.addListener((windowId) => {
-  console.log("window focused");
-  TabStack.load(mutex).then(async (tabStack) => {
-    mutex.runExclusive(async () => {
-      // need to reset when "exiting" the boomeranging state 
-      // we only exit the boomeranging state when (review these):
-      // - we create a new tab (think about this)
-      // - we close a tab
-      // - we switch to a tab using an actual click
-      // on exit, the current index is reset to 0 and isBoomeranging is set to 0
-      // the tabstack should be unfrozen and should be allowed to change
-      if (!tabStack.getIsBoomeranging()) {
-        // doing this makes sure the tabstack remain "frozen" in the boomeranging state
-        // get the active in this window
-        const [currentlyActiveTab]  = await chrome.tabs.query({ active: true, windowId})
-        if (currentlyActiveTab && currentlyActiveTab.id) {
-            await tabStack.addToTabStack({ windowId, tabId: currentlyActiveTab.id });
+        if (index === -1) {
+            // not in the stack
+            // exit boomerang mode, set the current index to 0
+            await tabStack.exitBoomerangMode()
+            console.log("EXITING BOOMERANGMODE")
+            await tabStack.addToTabStack(item);
+        } else {
+            console.log("here in the tab stac")
+            // think about this
+            // right now this lets the user click on an abritrary tab in the tab stack while boomeranging and preserving that order
+            await tabStack.updateCurrentIndex(index);
         }
       }
     });
   });
 });
 
-// browser.action.onClicked.addListener((tab) => {
-//   // also add
-//   // should I use async await inside this method
-//   TabStack.load().then(async (tabStack) => {
-//     if (tab?.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.windowId) {
-//       await tabStack.addToTabStack({ tabId: tab.id, windowId: tab.windowId });
-//     }
+// browser.windows.onFocusChanged.addListener((windowId) => {
+//   console.log("window focused");
+//   TabStack.load(mutex).then(async (tabStack) => {
+//     mutex.runExclusive(async () => {
+//       // need to reset when "exiting" the boomeranging state 
+//       // we only exit the boomeranging state when (review these):
+//       // - we create a new tab (think about this)
+//       // - we close a tab
+//       // - we switch to a tab using an actual click
+//       // on exit, the current index is reset to 0 and isBoomeranging is set to 0
+//       // the tabstack should be unfrozen and should be allowed to change
+//       if (!tabStack.getIsBoomeranging()) {
+//         // doing this makes sure the tabstack remain "frozen" in the boomeranging state
+//         // get the active in this window
+//         const [currentlyActiveTab]  = await chrome.tabs.query({ active: true, windowId})
+//         if (currentlyActiveTab && currentlyActiveTab.id) {
+//             await tabStack.addToTabStack({ windowId, tabId: currentlyActiveTab.id });
+//         }
+//       } else {
+
+//             // await tabStack.exitBoomerangMode()
+//             // console.log("EXITING BOOMERANGMODE")
+//             // await tabStack.addToTabStack();
+//       }
+//     });
 //   });
 // });
+
 
 browser.tabs.onAttached.addListener((tabId, { newWindowId }) => {
   TabStack.load(mutex).then(async (tabStack) => {
@@ -168,7 +183,7 @@ browser.tabs.onRemoved.addListener((tabId, { windowId }) => {
   console.log("here");
   TabStack.load(mutex).then(async (tabStack) => {
     if (tabStack.getIsBoomeranging()) {
-        await tabStack.reset();
+        await tabStack.exitBoomerangMode();
     }
     mutex.runExclusive(async () => {
       await tabStack.removeFromTabStack({ tabId, windowId });

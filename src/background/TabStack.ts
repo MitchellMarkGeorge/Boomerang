@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { StoredData, TabStackItem } from "../common/types";
+import { StoredData, TabStackItem } from "./types";
 // import { Mutex, MutexQueue } from "./Mutex";
 import { Mutex } from "async-mutex";
 // should I set a max size (3)?
@@ -21,7 +21,7 @@ export class TabStack {
     private isBoomeranging: boolean = false //
   ) {}
 
-  async reset() {
+  async exitBoomerangMode() {
     this.isBoomeranging = false;
     this.currentIndex = 0;
     await browser.storage.local.set({ currentIndex: 0, isBoomeranging: false });
@@ -48,6 +48,10 @@ export class TabStack {
     this.isBoomeranging = isBoomeranging;
     await browser.storage.local.set({ isBoomeranging });
   }
+  async enterBoomerangMode() {
+    this.isBoomeranging = true;
+    await browser.storage.local.set({ isBoomeranging : true });
+  }
 
   getPreviousIndex() {
     return this.previousIndex;
@@ -63,7 +67,7 @@ export class TabStack {
     // })
   }
 
-  getLength() {
+  getStackLength() {
     return this.stackItems.length;
   }
 
