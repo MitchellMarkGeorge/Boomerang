@@ -20,8 +20,8 @@
   },
   "commands": {
     "boomerang": {
-      "suggested_key": "Alt+Left",
-      "description": "Boomerang to your previous tab"
+      "suggested_key": "Ctrl+Shift+Left",
+      "description": "Switch between your current and pervious tabs"
     }
   }
 }
