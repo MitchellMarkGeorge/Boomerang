@@ -1,8 +1,6 @@
-# Boomerang
+![Boomerang Logo](src/assets/Boomerang%20Marquee.png)
 
-![Boomerang Logo](src/icons/Boomerang.png)
-
-A better way to switch between tabs.
+An easier way to switch between your most recent tabs.
 
 
 ## Instructions
@@ -52,10 +50,10 @@ Note: For minified production build, use `npm run build` instead.
 Usage
 </summary>
 
-- To add items to the TabStack, click on the Boomerang browser action
-- As of right now, it only supports 3 tabs at a time as a default, soon this will be customizable.
-- Use `ctrl` + `Right` to go forward in the TabStack
-- Use `ctrl` + `Left` to go backward in the TabStack
+To switch beween your previous and current tab, use the `ctrl` + `shift` + `left arrow` shortcut.
+
+That's it. That's how simple it is.
+
 Note: For Mac, `cmd` is used instead of `ctrl`.
 
 </details>

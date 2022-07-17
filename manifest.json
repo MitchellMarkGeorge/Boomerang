@@ -5,15 +5,15 @@
   "short_name": "Boomerang",
   "author": "Mitchell Mark-George",
   "version": "1.0",
-  "description": "An easier way to switch between your most recent tabs",
+  "description": "An easier way to switch between your most recent tabs.",
   "permissions": ["activeTab", "storage"],
   "offline_enabled": true,
   "minimum_chrome_version": "88",
   "action": {
-    "48": "icons/Boomerang.png"
+    "48": "icons/Boomerang Logo.png"
   },
   "icons": {
-    "48": "icons/Boomerang.png"
+    "48": "icons/Boomerang Logo.png"
   },
   "background": {
     "service_worker": "background/background.js"
