@@ -1,19 +1,19 @@
 export const enum Commands {
-    BOOMERANG_LEFT = "boomerang-left",
-    BOOMERANG_RIGHT = "boomerang-right" 
+    BOOMERANG = "boomerang"
 }
 
-export interface TabStackItem {
+export interface TabInfo {
     tabId: number;
     windowId: number;
 }
 
 export interface StoredData {
-    currentIndex: number,
-    previousIndex: number // previous position of the current tab
-    maxStackSize: number
-    tabStack: TabStackItem[]
-    isBoomeranging: boolean
+    currentTab?: TabInfo // wont be null as it is set on install
+    previousTab?: TabInfo;
 }
 
 export type StoredDataKeys = (keyof StoredData)[]
+
+export function isSameTab(a: TabInfo, b: TabInfo) {
+    return a.tabId === b.tabId && a.windowId === b.windowId;
+}
