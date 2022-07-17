@@ -6,7 +6,7 @@
   "author": "Mitchell Mark-George",
   "version": "1.0",
   "description": "An easier way to switch between your most recent tabs",
-  "permissions": ["tabs", "storage"],
+  "permissions": ["activeTab", "storage"],
   "offline_enabled": true,
   "minimum_chrome_version": "88",
   "action": {
@@ -20,7 +20,7 @@
   },
   "commands": {
     "boomerang": {
-      "suggested_key": "Ctrl+Shift+Left",
+      "suggested_key": "Alt+Left",
       "description": "Boomerang to your previous tab"
     }
   }

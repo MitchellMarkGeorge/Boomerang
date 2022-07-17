@@ -8,8 +8,8 @@ export interface TabInfo {
 }
 
 export interface StoredData {
-    currentTab?: TabInfo // wont be null as it is set on install
-    previousTab?: TabInfo;
+    currentTab: TabInfo | null; // cant be undefined
+    previousTab: TabInfo | null;
 }
 
 export type StoredDataKeys = (keyof StoredData)[]
