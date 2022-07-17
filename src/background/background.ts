@@ -66,6 +66,11 @@ browser.tabs.onActivated.addListener(({ tabId, windowId }) => {
     // what if the oldCurrentTab is undefined (the oldcurrtn tab was removed)
     // this will make the previous tab undefined
     const newCurrentTab = { tabId, windowId };
+    // there is the case that when switching beteen a tab and a window, the new active tab and the old current will be the same 
+    // this happens when the window focus event has already handles the tab order but the active event wantw to handle it again
+    if (oldCurrentTab && isSameTab(newCurrentTab, oldCurrentTab)) {
+      return;
+    }
     console.log("new current tab", newCurrentTab);
     console.log("new previous tab", oldCurrentTab);
     await updateStoredData({
@@ -75,7 +80,7 @@ browser.tabs.onActivated.addListener(({ tabId, windowId }) => {
   });
 });
 
-// // this is basically the same code as the onActive listener
+// this is basically the same code as the onActive listener
 browser.windows.onFocusChanged.addListener((windowId) => {
   mutex.runExclusive(async () => {
     console.log("focused");
