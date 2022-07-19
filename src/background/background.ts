@@ -11,7 +11,6 @@ const mutex = new Mutex();
 // FOR ALL BROWSER LISTENERS: DO NOT USE ASYNC
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  // if (process.env.NODE_ENV === "developmnent")
   // browser.storage.local.clear(); // for development
   // on install, add the current tab
   if (reason === "install") {
@@ -97,7 +96,9 @@ browser.windows.onFocusChanged.addListener((windowId) => {
     ) {
       const newCurrentTab: TabInfo = { tabId: activeTab.id, windowId };
       // this is needed as when all the browser windows have lost focus, this event is also called
-      // so when it refocuses, the "current" tab will be refocued will be refocused and will become the previous as well
+      // when it refocuses on the browser, it thinks that the currently acive tab is new so we have to tell the extension to ignore it
+      // so when it refocuses, the "current" tab will be will be refocused and will become the previous as well
+
       if (oldCurrentTab && isSameTab(newCurrentTab, oldCurrentTab)) {
         return;
       }
